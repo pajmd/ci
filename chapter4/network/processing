@@ -1,0 +1,68 @@
+processing
+----------
+word inputs: word, river, bank
+output urls: bank, river, earth
+
+Training:
+parameters:
+ . list restricted list od inputs: revier, bank
+ . list of all the outputs bnk, river, earth
+ . the correct output: river
+
+- generatehiddennodes:
+  . if it doesn't alredy exist, creates a hidden node for the combination river/bank
+    . assign a defaul weight to all connction between inputs and hidden node
+    . assign a defaul weight to all connction between hidden node and all output urls
+
+- setup network:
+  parameters:
+   - list restricted list of inputs: river, bank
+   - list of all the outputs bnk, river, earth
+  . gets all the connections involving the input parameters / hidden nodes 
+      (in my case always all the hidden nodes because when a created the network I 
+      linked all the inputs to the hidden nodes and all the hidden nodes to the 
+      outputs and assign a default weight to all conncetions)
+  . set the restricted list input outputs to 1
+  . builds a maxtrix of weights RESTRICTED list inputs - hidden nodes
+  . builds a maxtrix of weights hidden nodes - outputs
+    (in my case it is the full 2 matrices)
+
+- feed forward:
+  . set the restricted list input outputs to 1
+  . calculates the hidden outputs: each hidden output =
+    hidden output(j)= tanh(sum( weight input(i)-hidden(j) x input(i)))
+  . calculates the output ouputs: each output output =
+    ouput output(j) = tanh(sum(hiddenoutput(i) x weight_hiddenoutput(i)_output(j)))
+
+- backpropagate:
+  parameter: set all all the outputs with the output deemed correct set to 1 the others 0
+  . calculate the output delta
+    - calculate the error for each output: error(i) = (target[i] - output output[i])
+    - calculate output deltas: outpu delta[i] = grad(output output[i]) x error(i)
+
+  . calculate the hidden delta: 
+    for each hidden link involved in the previous feed forward <-- me I have all the linked involved
+    - calculate the error:
+      error(j) = sum( output delta[i] * weight hidden[j]-output[i]) 
+    - hidden_delta(j) = grad(hidden(j)) * error(j)
+
+  . update the hidden-output weights for each hidden node involved in the feedforward
+    connection hidden(i) to output(j)
+    change(i,j) = output delta(j) * hidden_output(i) (hidden_output(i) calculated in the feedforward)
+    weight hidden-output(i,j) = weight hidden-output(i,j) + change(i,j)xLearning rate
+
+  . update input-hidden weight for the inputs involved in the feedforward
+    connection input(i) to hidden(j)
+    change(i,j) =hidden delta(j) * input(i) <-- should be ok for my version bc only relvant inputs=1
+    weight input-hidden(i, j) = weight input-hidden(i, j) + change(i, j)xlearning rate
+
+
+
+Getting the result:
+parmeters: restricted list of input
+           all the outputs
+- setup network with:
+  . restricted list of input
+  . all the outputs
+feedforward
+print all the outputs
