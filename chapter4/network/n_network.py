@@ -4,9 +4,9 @@ import numpy as np
 class Network(object):
     
     def __init__(self, input_number, hidden_number, output_number):
-        self.input_nodes = [0] * input_number
-        self.hidden_nodes = [0] * hidden_number
-        self.output_nodes = [0] * output_number
+        self.input_number = input_number
+        self.hidden_number = hidden_number
+        self.output_number = output_number
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
@@ -21,25 +21,18 @@ class Network(object):
         return 1 - val ** 2
 
     def create_connections(self, h_to_o_weight = 0.1):
-        i_to_h_weight = 1 / len(self.input_nodes)
+        i_to_h_weight = 1 / self.input_number
         self.matrix_wih = []
         self.matrix_who = []
-        
-        for input_node in self.input_nodes:
-            weight_hidden_input_col = []
-            for hidden_node in self.hidden_nodes:
-                weight_hidden_input_col.append(i_to_h_weight)
-            self.matrix_wih.append(weight_hidden_input_col)
-        self.matrix_wih = np.matrix(self.matrix_wih)
-#        self.matrix_wih = np.matrix([[0.8,0.4,0.3],[0.2,0.9,0.5]])
 
-        for hidden_node in self.hidden_nodes:
-            weight_output_hidden_col = []
-            for ouput_node in self.output_nodes:
-                weight_output_hidden_col.append(h_to_o_weight)
-            self.matrix_who.append(weight_output_hidden_col)
-        self.matrix_who = np.matrix(self.matrix_who)
+        np.random.seed(1)
+#        self.matrix_wih = np.matrix([[0.8,0.4,0.3],[0.2,0.9,0.5]])
+        self.matrix_wih = np.matrix([[i_to_h_weight]* self.hidden_number]*self.input_number)
+        self.matrix_wih = 2 * np.random.random((self.input_number,self.hidden_number)) - 1
+
 #        self.matrix_who = np.matrix([[0.3],[0.5],[0.9]])
+        self.matrix_who = np.matrix([[h_to_o_weight]* self.output_number]*self.hidden_number)
+        self.matrix_who = 2 * np.random.random((self.hidden_number, self.output_number)) - 1
         pass
 
     def feed_forward(self, input_mask):
@@ -77,18 +70,25 @@ class Network(object):
         return hidden_deltas
 
     def update_hidden_output_weight(self, output_deltas, learning_rate):
-        change = np.dot(self.hidden_outputs.transpose(), output_deltas)
-        #https://stevenmiller888.github.io/mind-how-to-build-a-neural-network/
-        #change = np.divide(output_deltas, self.hidden_outputs.transpose())
-        change = learning_rate * change
-        self.matrix_who = self.matrix_who + change
+        for k, h in enumerate(self.hidden_outputs):
+            c = output_deltas * h
+            self.matrix_who[k, :] =  self.matrix_who[k, :] + (c * learning_rate)
+
+        # change = np.dot(self.hidden_outputs.transpose(), output_deltas)
+        # #https://stevenmiller888.github.io/mind-how-to-build-a-neural-network/
+        # #change = np.divide(output_deltas, self.hidden_outputs.transpose())
+        # change = learning_rate * change
+        # self.matrix_who = self.matrix_who + change
 
     def update_input_to_hidden_weight(self, hidden_deltas, learning_rate):
-        change = np.dot(np.matrix(self.input_outputs).transpose(), hidden_deltas)
-        # https://stevenmiller888.github.io/mind-how-to-build-a-neural-network/
-        #change = np.divide(hidden_deltas, np.matrix(self.input_outputs).transpose())
-        change = learning_rate * change
-        self.matrix_wih = self.matrix_wih + change
+        for k, io in enumerate(self.input_outputs):
+            c = hidden_deltas * io
+            self.matrix_wih[k, :] =  self.matrix_wih[k, :] + (c * learning_rate)
+        # change = np.dot(np.matrix(self.input_outputs).transpose(), hidden_deltas)
+        # # https://stevenmiller888.github.io/mind-how-to-build-a-neural-network/
+        # #change = np.divide(hidden_deltas, np.matrix(self.input_outputs).transpose())
+        # change = learning_rate * change
+        # self.matrix_wih = self.matrix_wih + change
 
     def back_propagate(self, target, learning_rate=0.5):
         output_deltas = self.get_output_deltas(target)

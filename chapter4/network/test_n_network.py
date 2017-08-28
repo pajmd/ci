@@ -62,14 +62,14 @@ def _test_result_from_taring():
 
 # >> wWorld,wRiver,wBank =101,102,103
 # >> uWorldBank,uRiver,uEarth =201,202,203
-def _test_train():
+def test_train():
     mynet = Network(3,4,3)
     mynet.create_connections()
     #mynet.feed_forward([1,1,1])
     #print(mynet.output_ouputs)
     print(mynet.matrix_wih)
     print(mynet.matrix_who)
-    for i in range(1):
+    for i in range(1000):
         #print('='*20)
         mynet.train([1,0,1],[1,0,0])
         #print(mynet.matrix_wih)
@@ -115,7 +115,7 @@ def _test_train_xor():
     print('[0,1]= %s'%mynet.output_ouputs)
 
 
-def test_train_31():
+def _test_train_31():
     mynet = Network(3,3,1)
     mynet.create_connections()
     print(mynet.matrix_wih)
