@@ -62,7 +62,7 @@ def _test_result_from_taring():
 
 # >> wWorld,wRiver,wBank =101,102,103
 # >> uWorldBank,uRiver,uEarth =201,202,203
-def test_train():
+def _test_train_urls():
     mynet = Network(3,4,3)
     mynet.create_connections()
     #mynet.feed_forward([1,1,1])
@@ -131,3 +131,46 @@ def _test_train_31():
     print('[1,0,0]= %s'%mynet.output_ouputs)
     mynet.feed_forward([1,0,0])
     print('[0,0,0]= %s'%mynet.output_ouputs)
+
+def _test_update_who():
+    mynet = Network(3,4,3)
+    mynet.create_connections()
+
+    mynet.matrix_who = np.matrix(
+        [[-0.5910955,   0.75623487, -0.94522481],
+        [0.34093502, -0.1653904,   0.11737966],
+        [-0.71922612, -0.60379702, 0.60148914],
+        [0.93652315, -0.37315164,  0.38464523]])
+
+    d = [0.40795614,0.62674606,0.23841622,0.49377636]
+    d = [1, 2, 3]
+    mynet.hidden_outputs = np.array(d, dtype=float)
+    output_deltas = np.array([ 0.10676222, -0.11685494, -0.12631629], dtype=float)
+    # c = output_deltas * h
+    #result is addition of c to each row of matric_who
+    matrix_who_expected = np.matrix(
+        [[-0.56931835,  0.73239903, -0.97099057],
+         [0.37439142, -0.20200958,  0.07779554],
+        [-0.7064992, -0.61772708, 0.58643121],
+        [0.96288148, -0.40200175,  0.35345923]]
+    )
+    mynet.update_hidden_output_weight_new(output_deltas, 0.5)
+    assert mynet.matrix_who == matrix_who_expected
+
+def _test_brodacasting_add():
+    x1 = np.arange(9.0).reshape((3, 3))
+    x2 = np.arange(3.0)+1
+    # broadcasting happens meaning x 2 is extending to the smae shape as x1 and the x2 value repeated for each row.
+    r = np.add(x1, x2)
+    print(x1)
+    print(x2)
+    print(r)
+
+
+def test_brodacasting_plus():
+    x1 = np.arange(9.0).reshape((3, 3))
+    x2 = np.arange(3.0)+1
+    r = x1 + x2
+    print(x1)
+    print(x2)
+    print(r)

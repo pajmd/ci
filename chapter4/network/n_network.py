@@ -73,7 +73,6 @@ class Network(object):
         for k, h in enumerate(self.hidden_outputs):
             c = output_deltas * h
             self.matrix_who[k, :] =  self.matrix_who[k, :] + (c * learning_rate)
-
         # change = np.dot(self.hidden_outputs.transpose(), output_deltas)
         # #https://stevenmiller888.github.io/mind-how-to-build-a-neural-network/
         # #change = np.divide(output_deltas, self.hidden_outputs.transpose())
