@@ -1,0 +1,12 @@
+Not great because it's only 2 layers:
+-------------------------------------
+https://medium.com/technology-invention-and-more/how-to-build-a-simple-neural-network-in-9-lines-of-python-code-cc8f23647ca1
+
+Accademic:
+----------
+https://stevenmiller888.github.io/mind-how-to-build-a-neural-network/
+
+Titactoe discussion:
+--------------------
+http://www.tropicalcoder.com/NeuralNetwork.htm
+

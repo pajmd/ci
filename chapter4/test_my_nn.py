@@ -25,3 +25,4 @@ def test_training():
     mynet.getresult([wBank], allurls)
     print(mynet.ao)
 
+    

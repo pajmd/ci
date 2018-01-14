@@ -1,3 +1,5 @@
+# same as n_network except I tried to apply ony steve miller's backpropagation
+
 from math import tanh
 import numpy as np
 
@@ -63,39 +65,39 @@ class Network(object):
         output_deltas = np.multiply(output_gradients, errors)
         return output_deltas
 
+    def calculate_new_output_weight(self, output_deltas, learning_rate):
+        # Delta weights = delta output sum / hidden layer results
+        dow =  output_deltas / self.hidden_outputs
+        # new weights a old weights + delta weights
+        dowt = dow.T
+        for col in range(self.matrix_who.shape[1]):
+            self.matrix_who[:, col] = self.matrix_who[:, col] + dowt[:, col]
+        pass
+
     def get_hidden_deltas(self, output_deltas):
-        error_matrix = np.dot(output_deltas, self.matrix_who.transpose())
+        # Delta hidden sum = delta output sum / hidden-to-outer weights * S'(hidden sum)
+        error_matrix = output_deltas / self.matrix_who
         #https://stevenmiller888.github.io/mind-how-to-build-a-neural-network/
         #error_matrix = np.divide(output_deltas, self.matrix_who.transpose())
-        hidden_deltas = np.multiply(self.matrix_gradient(self.hidden_outputs),
-                                    error_matrix)
+        hidden_deltas = error_matrix.copy()
+        for col in range(error_matrix.shape[1]):
+            hidden_deltas[:, col] = error_matrix[:, col] * self.matrix_gradient(self.hidden_outputs)[:,0]
         return hidden_deltas
 
-    def update_hidden_output_weight(self, output_deltas, learning_rate):
-        for k, h in enumerate(self.hidden_outputs):
-            c = output_deltas * h
-            self.matrix_who[k, :] =  self.matrix_who[k, :] + (c * learning_rate)
-        # change = np.dot(self.hidden_outputs.transpose(), output_deltas)
-        # #https://stevenmiller888.github.io/mind-how-to-build-a-neural-network/
-        # #change = np.divide(output_deltas, self.hidden_outputs.transpose())
-        # change = learning_rate * change
-        # self.matrix_who = self.matrix_who + change
-
-    def update_input_to_hidden_weight(self, hidden_deltas, learning_rate):
-        for k, io in enumerate(self.input_outputs):
-            c = hidden_deltas * io
-            self.matrix_wih[k, :] =  self.matrix_wih[k, :] + (c * learning_rate)
-        # change = np.dot(np.matrix(self.input_outputs).transpose(), hidden_deltas)
-        # # https://stevenmiller888.github.io/mind-how-to-build-a-neural-network/
-        # #change = np.divide(hidden_deltas, np.matrix(self.input_outputs).transpose())
-        # change = learning_rate * change
-        # self.matrix_wih = self.matrix_wih + change
+    def calculate_input_to_hidden_weight(self, hidden_deltas, learning_rate):
+        dihw = hidden_deltas / self.input_outputs
+        dihwt = dihw.T
+        for row in range(self.matrix_wih.shape[0]):
+            self.matrix_wih[row, : ] = self.matrix_wih[row, : ] + dihwt[row, : ]
+            pass
 
     def back_propagate(self, target, learning_rate=0.5):
         output_deltas = self.get_output_deltas(target)
         hidden_deltas = self.get_hidden_deltas(output_deltas)
-        self.update_hidden_output_weight(output_deltas,learning_rate)
-        self.update_input_to_hidden_weight(hidden_deltas,learning_rate)
+        # new weigths could be calculated before getting the hidden delta but we need
+        # the old valueof the weights to calculate the hidden deltas
+        self.calculate_new_output_weight(output_deltas,learning_rate)
+        self.calculate_input_to_hidden_weight(hidden_deltas,learning_rate)
 
     def train(self, input_mask, target, learning_rate=0.5):
         self.feed_forward(input_mask)

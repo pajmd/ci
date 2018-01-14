@@ -1,4 +1,4 @@
-from chapter4.network.n_network import Network
+from chapter4.network.n_net import Network
 import numpy as np
 
 def _test_forward():
@@ -97,18 +97,18 @@ def _test_train_urls():
 
 
 def test_train_xor():
-    mynet = Network(2,3,2)
+    mynet = Network(2,3,1)
     mynet.create_connections()
     # print(mynet.matrix_wih)
     # print(mynet.matrix_who)
-    for i in range(1000):
+    for i in range(2):
         # 1 xor 1 = 0 [prob 0, prob1]
-        mynet.train([1,1],[1,0], learning_rate=1)
+        mynet.train([1,1],[0], learning_rate=1)
         # print(mynet.matrix_wih)
         # print(mynet.matrix_who)https://stevenmiller888.github.io/mind-how-to-build-a-neural-network/
-        mynet.train([1, 0], [0,1], learning_rate=1)
-        mynet.train([0, 0], [1,0], learning_rate=1)
-        mynet.train([0, 1], [0, 1], learning_rate=1)
+        mynet.train([1, 0], [1], learning_rate=1)
+        #mynet.train([0, 0], [0], learning_rate=1)
+        #mynet.train([0, 1], [0, 1], learning_rate=1)
     mynet.feed_forward([1,1])
     print('[1,1]= %s'%mynet.output_ouputs)
     mynet.feed_forward([0,0])
@@ -121,7 +121,7 @@ def test_train_xor():
     print('[1,1]= %s'%mynet.output_ouputs)
 
 
-def test_train_xor_1o():
+def _test_train_xor_1o():
     mynet = Network(2,3,1)
     mynet.create_connections()
     # print(mynet.matrix_wih)
